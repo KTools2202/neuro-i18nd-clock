@@ -1,0 +1,48 @@
+name: Lint with flake8 & correct with autopep8 on push
+
+on:
+    push:
+    pull_request:
+
+permissions:
+    contents: write
+
+jobs:
+    lint:
+        name: Lint with flake8
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                ref: ${{ github.ref_name }}
+            
+            - name: Setup Python
+              uses: actions/setup-python@v5
+              with:
+                python-version: 3.11 # Change this to whatever version the program is being developed on
+            
+            - name: flake8 install
+              id: pip-flake8
+              run: pip install flake8
+            
+            - name: Run flake8
+              id: flake8
+              run: flake8
+            
+            - name: Fix using autopep8 on pushes
+              id: autopep8
+              if: ${{ github.event_name == 'push' }}
+              run: |
+                pip install autopep8
+                autopep8 --in-place .
+            
+            - name: Commit changes
+              id: commit
+              if: ${{ steps.autopep8.outcome == 'success' }}
+              run: |
+                git config user.name GitHub Actions
+                git config user.email actions@github.com
+                git add .
+                git commit -m "chore: run autopep8 on ${{ github.sha }}"
+                git push

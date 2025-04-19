@@ -1,0 +1,112 @@
+name: Release Python app
+
+run-name: Release ${{ github.ref_name }}
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build app for ${{ matrix.os }}
+    runs-on: ${{ matrix.runner_os }}
+    strategy:
+      matrix:
+        runner_os: ["windows-latest", "macos-latest", "ubuntu-latest"]
+        include:
+            - runner_os: "windows-latest"
+              os: "Windows"
+            - runner_os: "macos-latest"
+              os: "Mac"
+            - runner_os: "ubuntu-latest"
+              os: "Linux"
+    steps:
+      - name: Checkout ref
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - name: Install requirements
+        run: |
+          pip install -r requirements.txt
+
+      - name: PyInstaller
+        run: pyinstaller --onefile --windowed main.py --name ${{ github.repository_id }}_${{ matrix.os }}
+
+      - name: List dist directory
+        run: ls -R dist
+
+      - name: Tar files on Linux
+        if: ${{ matrix.runner_os == 'ubuntu-latest' }}
+        run: |
+          chmod +x dist/${{ github.repository_id }}_${{ matrix.os }}
+          tar -czvf dist/${{ github.repository_id }}@${{ github.ref_name }}_${{ matrix.os }}.tar.gz dist/${{ github.repository_id }}_${{ matrix.os }}
+          rm -rf dist/${{ github.repository_id }}_${{ matrix.os }}
+      
+      - name: Zip artifact on Mac
+        if: ${{ matrix.runner_os == 'macos-latest' }}
+        run: |
+          zip -r ${{ github.repository_id }}@${{ github.ref_name }}_${{ matrix.os }}.zip dist/
+          rm -rf dist/
+          mkdir dist/
+          mv ${{ github.repository_id }}@${{ github.ref_name }}_${{ matrix.os }}.zip dist/
+      
+      - name: Zip files on Windows
+        if: ${{ matrix.runner_os == 'windows-latest' }}
+        run: |
+          $itemsToZip = @(".\dist\${{ matrix.os }}_cmd-release", ".\dist\${{ matrix.os }}_cli-release")
+          Compress-Archive -Path $itemsToZip -DestinationPath ".\dist\${{ github.repository_id }}@${{ github.ref_name }}_${{ matrix.os }}.zip"
+          if (Test-Path ".\dist\${{ github.repository_id }}@${{ github.ref_name }}_${{ matrix.os }}.zip") { 
+            foreach ($item in $itemsToZip) {
+              Remove-Item -Path $item -Recurse -Force
+            }
+            Write-Output "Files zipped and originals deleted successfully."
+            exit 0
+          } else {
+            Write-Output "Failed to create zip file. Source files were not deleted."
+            exit 1
+          }
+
+      - name: Upload debug builds
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.os }}_builds
+          path: build/*
+
+      - name: Upload distributable builds
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.os }}_dists
+          path: dist/*
+
+  normal_release:
+    name: Draft normal release
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-artifacts
+          pattern: "*_dists"
+
+      - name: List release-artifacts directory # debug
+        run: ls -R release-artifacts
+
+      - name: Draft normal release
+        uses: ncipollo/release-action@v1.14.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          generateReleaseNotes: true
+          tag: ${{ github.ref_name }}
+          artifacts: release-artifacts/*_dists/${{ github.repository_id }}_*
+          draft: true
+          name: "${{ github.repository }}_${{ github.ref_name }}_*"
+          body: "Need help? Refer to the documentation site."

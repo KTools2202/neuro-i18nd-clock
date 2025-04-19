@@ -1,0 +1,7 @@
+# PEP 8 style guidelines
+flake8==7.1.1
+autopep8==2.3.1
+# PyInstaller (freezing scripts)
+pyinstaller==6.11.1
+# MkDocs
+mkdocs==1.6.1

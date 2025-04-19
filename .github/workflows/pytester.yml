@@ -1,0 +1,39 @@
+name: Unit testing with pytest
+
+on:
+    push:
+    pull_request:
+
+jobs:
+    test:
+        name: Run unit testing
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                ref: ${{ github.ref_name }}
+            
+            - name: Setup Python
+              uses: actions/setup-python@v5
+              with:
+                python-version: 3.11 # Change this to whatever version the program is being developed on
+            
+            - name: Install dependencies & pytest
+              id: pip-deps
+              run: |
+                pip install -r requirements.txt
+                pip install pytest
+            
+            - name: Run pytest
+              id: pytest
+              run: |
+                pytest script.py
+                pytest script.py >> ${{ github.sha }}-pytest-results
+            
+            - name: Upload test results
+              if: ${{ steps.pytest.outcome != cancelled() }}
+              uses: actions/upload-artifact@v4
+              with:
+                name: Pytest results
+                path: ${{ github.sha }}-pytest-results

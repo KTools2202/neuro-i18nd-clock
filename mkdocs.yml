@@ -1,0 +1,35 @@
+site_name: Template Python Repo
+site_description: Probably not finished.
+site_author: The repo's creator.
+
+repo_name: GitHub
+repo_url: https://github.com/{username}/{repo}
+edit_uri: blob/main/docs/
+
+theme: 
+  name: mkdocs
+  icon:
+    repo: fontawesome/brands/github
+  color_mode: dark
+  user_color_mode_toggle: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/
+    - icon: fontawesome/brands/discord
+      link: https://discord.gg/
+    - icon: fontawesome/brands/bluesky
+      link: https://bsky.social/
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/
+
+nav:
+  - Home: index.md
+
+markdown_extensions:
+  - toc:
+      permalink: true
+
+plugins:
+  - search
