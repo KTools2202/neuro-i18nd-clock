@@ -1,4 +1,4 @@
-# Neuro Clock
+# Nuru Clock
 
 (Not the clock that Neuro actually uses, that's way more basic.)
 
