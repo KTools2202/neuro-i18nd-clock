@@ -57,7 +57,7 @@ class ClockAPI(AbstractNeuroAPI):
 
 async def clock_game():
     uri = getenv("WEBSOCKET_URI")
-    game_title = "Neuro Clock"
+    game_title = "Nuru Clock"
     async with trio_websocket.open_websocket_url(uri) as websocket:
         api = ClockAPI(game_title, websocket)
         await api.send_startup_command()
