@@ -52,7 +52,7 @@ class ClockAPI(AbstractNeuroAPI):
             await self.send_context("You somehoiw sent something incorrectly. Double-check your inputs and try again.")
             return
         except Exception as e:
-            await self.send_context(f"An exception occured while trying to check the time: {e}")
+            await self.send_context(f"An error occured while trying to check the time\n{e}")
 
 
 async def clock_game():
