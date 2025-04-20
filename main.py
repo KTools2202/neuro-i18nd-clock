@@ -14,6 +14,7 @@ load_dotenv()
 
 all_timezones = pytz.all_timezones
 
+
 class ClockAPI(AbstractNeuroAPI):
     def __init__(self, game_title: str, connection: trio_websocket.WebSocketConnection | None = None):
         super().__init__(game_title, connection)
@@ -21,15 +22,15 @@ class ClockAPI(AbstractNeuroAPI):
             "get_current_time": lambda action: self.handle_get_formatted_time(action),
             "get_unix_timestamp": lambda action: self.handle_get_unix_timestamp(action)
         }
-    
+
     async def handle_action(self, action: NeuroAction) -> None:
         if action.data is None:
             print("Didn't find any data.")
             await self.send_action_result(action.id_, False, "You didn't specify anything.")
             return
-        
+
         await self.list_of_actions[action.name](action)
-        
+
     async def handle_get_formatted_time(self, action: NeuroAction) -> None:
         """
         Handles getting the current time, formatted to Neuro's liking.
@@ -50,7 +51,7 @@ class ClockAPI(AbstractNeuroAPI):
         except (ValueError, TypeError):
             await self.send_action_result(action.id_, False, "Invalid action data.")
             return
-        
+
         # Note: Always send result before executing actions, since the action result is meant to validate stuff.
         await self.send_action_result(action.id_, True)
 
@@ -63,7 +64,7 @@ class ClockAPI(AbstractNeuroAPI):
             return
         except Exception as e:
             await self.send_context(f"An error occured while trying to check the time\n{e}")
-    
+
     async def handle_get_unix_timestamp(self, action: NeuroAction) -> None:
         """
         Returns a Unix timestamp of the time input.
@@ -84,7 +85,7 @@ class ClockAPI(AbstractNeuroAPI):
         except (ValueError, TypeError):
             await self.send_action_result(action.id_, False, "Invalid action data.")
             return
-        
+
         # Note: Always send result before executing actions, since the action result is meant to validate stuff.
         await self.send_action_result(action.id_, True)
 
@@ -98,10 +99,12 @@ class ClockAPI(AbstractNeuroAPI):
         except Exception as e:
             await self.send_context(f"An error occured while trying to convert to Unix\n{e}")
 
+
 list_of_actions = {
     "get_current_time": lambda action: ClockAPI.handle_get_formatted_time(action),
     "get_unix_timestamp": lambda action: ClockAPI.handle_get_unix_timestamp(action)
 }
+
 
 async def clock_game():
     uri = getenv("WEBSOCKET_URI")
@@ -154,16 +157,17 @@ def get_formatted_time(timezone: str, time_format: str) -> str:
     try:
         # Get the timezone object
         tz = pytz.timezone(timezone)
-        
+
         # Get the current time in the specified timezone
         current_time = datetime.now(tz)
-        
+
         # Format the time
         return current_time.strftime(time_format)
     except pytz.UnknownTimeZoneError:
         raise ValueError(f"Error: Unknown timezone '{timezone}'")
     except Exception as e:
         raise Exception(f"Error: {str(e)}")
+
 
 def get_unix_timestamp(timestamp: str, timezone: str) -> int:
     """
@@ -178,16 +182,16 @@ def get_unix_timestamp(timestamp: str, timezone: str) -> int:
     try:
         # Get the timezone object
         tz = pytz.timezone(timezone)
-        
+
         # Parse the input timestamp into a datetime object
         dt = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S')
-        
+
         # Localize the datetime object to the specified timezone
         localized_dt = tz.localize(dt)
-        
+
         # Convert the localized datetime to a Unix timestamp
         unix_timestamp = int(localized_dt.timestamp())
-        
+
         return unix_timestamp
     except pytz.UnknownTimeZoneError:
         raise ValueError(f"Error: Unknown timezone '{timezone}'")
@@ -195,6 +199,7 @@ def get_unix_timestamp(timestamp: str, timezone: str) -> int:
         raise ValueError(f"Error: {str(e)}")
     except Exception as e:
         raise Exception(f"Error: {str(e)}")
+
 
 if __name__ == "__main__":
     trio.run(clock_game)
