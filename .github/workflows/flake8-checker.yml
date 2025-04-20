@@ -35,7 +35,7 @@ jobs:
               if: ${{ github.event_name == 'push' }}
               run: |
                 pip install autopep8
-                autopep8 --in-place .
+                autopep8 --in-place main.py
             
             - name: Commit changes
               id: commit
