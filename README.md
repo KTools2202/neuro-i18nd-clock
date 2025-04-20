@@ -15,6 +15,7 @@ Note: This project was made more as a way of putting my understanding of the Neu
 ## Features
 
 - Gets the current time in any timezone.
+- Gets the current time in Unix.
 
 <!--[See the documentation](../docs/) for more.-->
 
