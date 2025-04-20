@@ -1,4 +1,8 @@
-# PythonTemplateRepo
+# Neuro Clock
+
+(Not the clock that Neuro actually uses, that's way more basic.)
+
+Note: This project was made more as a way of putting my understanding of the Neuro Game API into a different language than just TypeScript. Hence why it's basic and also redundant.
 
 ![Made in Python badge](./docs/badges/made-in-python.svg)
 
@@ -8,49 +12,14 @@
 
 [Image credits](./image-credits.md)
 
-This is a basic README template. Feel free to customise it to your liking.
-
 ## Features
 
-- Feature 1
-- Feature 2
+- Gets the current time in any timezone.
 
-[See the documentation](../docs/) for more.
+<!--[See the documentation](../docs/) for more.-->
 
-## Options to run
+## Running the program
 
-You can run the program from source or use a pre-compiled binary.
+Pre-built binaries are in the Actions tab.
 
-Pre-compiled binaries are available either from the Releases tab (if the developer chooses to add them there) or after each push from the Actions tab (GitHub account required). Please be aware that using binaries from the Actions tab is very dangerous, as it is considered untested software.
-
-To run the program from source, you'll need to have the following prerequisites:
-
-- Python 3.11 <!-- Change this to the version of Python this is being developed in -->
-- Git (note that this is not a necessary but it's often best to have such)
-
-- Clone this repository using:
-
-```bash
-git clone https://github.com/{username}/{repo}
-```
-
-- Then, setup a virtual environment:
-
-```bash
-python -m venv venv
-venv\scripts\activate
-pip install -r requirements.txt
-```
-
-- Finally, run the necessary command for your situation:
-
-```bash
-# Running the program itself
-python main.py
-# Viewing the MkDocs site
-mkdocs serve
-# Freezing the application
-pyinstaller --onefile main.py
-```
-
-And all done!
+If you're running from source, you'll need to run the `main.py` file after installing dependencies in `requirements.txt`. The `lab.py` is for experimenting with stuff, so it won't work/be relevant 99.99% of the time.
