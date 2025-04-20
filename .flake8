@@ -4,7 +4,8 @@ exclude =
     .git,
     __pycache__,
     venv,
-    .env
+    .env,
+    site-packages/
 ignore = 
     E203,  # Whitespace before ':'
     W503   # Line break before binary operator
