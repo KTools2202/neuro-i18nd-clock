@@ -90,8 +90,8 @@ jobs:
   publish_pypi:
     name: Publish to PyPI
     environment:
-      name: test-pypi-index
-      url: https://test.pypi.org/p/nuru_clock
+      name: pypi-index
+      url: https://pypi.org/p/nuru_clock
     permissions: 
       id-token: write
     runs-on: ubuntu-latest
@@ -114,8 +114,6 @@ jobs:
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@v1.12.4
-        with:
-          repository-url: https://test.pypi.org/legacy/
 
   draft_github_release:
     name: Draft GitHub Release

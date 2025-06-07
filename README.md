@@ -11,8 +11,4 @@ Note: This project was made more as a way of putting my understanding of the Neu
 
 <!--[See the documentation](../docs/) for more.-->
 
-## Running the program
-
-Pre-built binaries are in the Actions tab.
-
-If you're running from source, you'll need to run the `main.py` file after installing dependencies in `requirements.txt`. The `lab.py` is for experimenting with stuff, so it won't work/be relevant 99.99% of the time.
+<!-- todo: implement countdown timer, stopwatch(?), alarms -->
