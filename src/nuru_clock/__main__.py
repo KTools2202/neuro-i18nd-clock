@@ -3,10 +3,8 @@ from neuro_api.api import AbstractNeuroAPI, NeuroAction
 import trio
 import trio_websocket
 import json
-
 from datetime import datetime
 import pytz
-
 from os import getenv
 from dotenv import load_dotenv
 
@@ -36,6 +34,9 @@ class ClockAPI(AbstractNeuroAPI):
         Handles getting the current time, formatted to Neuro's liking.
         """
         try:
+            if action.data is None:
+                await self.send_action_result(action.id_, False, "No action data provided.")
+                return
             action_data = json.loads(action.data)
             timezone = str(action_data.get("timezone"))
             if timezone is None:
@@ -52,58 +53,61 @@ class ClockAPI(AbstractNeuroAPI):
             await self.send_action_result(action.id_, False, "Invalid action data.")
             return
 
-        # Note: Always send result before executing actions, since the action result is meant to validate stuff.
+        # Always send result (i.e. validation) before executing action.
         await self.send_action_result(action.id_, True)
 
-        # Send off the data to the helper function
         try:
-            await self.send_context(f"In the {timezone} format, it is currently {get_formatted_time(timezone, time_format)}.")
+            await self.send_context(
+                f"In the {timezone} format, it is currently {get_formatted_time(timezone, time_format)}."
+            )
             return
         except ValueError:
-            await self.send_context("You somehow sent something incorrectly. Double-check your inputs and try again.")
+            await self.send_context("Double-check your inputs and try again.")
             return
         except Exception as e:
-            await self.send_context(f"An error occured while trying to check the time\n{e}")
+            await self.send_context(f"An error occurred: {e}")
 
     async def handle_get_unix_timestamp(self, action: NeuroAction) -> None:
         """
         Returns a Unix timestamp of the time input.
         """
         try:
+            if action.data is None:
+                await self.send_action_result(action.id_, False, "No action data provided.")
+                return
             action_data = json.loads(action.data)
             timezone = str(action_data.get("timezone"))
             if timezone is None:
                 await self.send_action_result(action.id_, False, "You didn't provide a timezone.")
                 return
             if timezone not in all_timezones:
-                await self.send_action_result(action.id_, False, "You didn't provide a valid (or supported) timezone.")
+                await self.send_action_result(action.id_, False, "Invalid timezone provided.")
                 return
             timestamp = str(action_data.get("timestamp"))
             if timestamp is None:
-                await self.send_action_result(action.id_, False, "You didn't provide a timestamp to convert. Make sure it's in %Y-%m-%d %H:%M:%S format when retrying.")
+                await self.send_action_result(
+                    action.id_,
+                    False,
+                    "Timestamp missing. Use '%Y-%m-%d %H:%M:%S' format."
+                )
                 return
         except (ValueError, TypeError):
             await self.send_action_result(action.id_, False, "Invalid action data.")
             return
 
-        # Note: Always send result before executing actions, since the action result is meant to validate stuff.
+        # Always send validation result before performing an action.
         await self.send_action_result(action.id_, True)
 
-        # Send off the data to the helper function
         try:
-            await self.send_context(f"The Unix timestamp for {timestamp} in {timezone} is {get_unix_timestamp(timestamp, timezone)}.")
+            await self.send_context(
+                f"The Unix timestamp for {timestamp} in {timezone} is {get_unix_timestamp(timestamp, timezone)}."
+            )
             return
         except ValueError:
-            await self.send_context("You somehow sent something incorrectly. Double-check your inputs and try again.")
+            await self.send_context("Double-check your inputs and try again.")
             return
         except Exception as e:
-            await self.send_context(f"An error occured while trying to convert to Unix\n{e}")
-
-
-list_of_actions = {
-    "get_current_time": lambda action: ClockAPI.handle_get_formatted_time(action),
-    "get_unix_timestamp": lambda action: ClockAPI.handle_get_unix_timestamp(action)
-}
+            await self.send_context(f"An error occurred: {e}")
 
 
 async def clock_game():
@@ -112,7 +116,8 @@ async def clock_game():
     async with trio_websocket.open_websocket_url(uri) as websocket:
         api = ClockAPI(game_title, websocket)
         await api.send_startup_command()
-        await api.unregister_actions(list(list_of_actions.keys()))
+        # Unregister using the keys from the instance's actions, not a global dictionary.
+        await api.unregister_actions(list(api.list_of_actions.keys()))
         await api.register_actions([
             Action(
                 name="get_current_time",
@@ -128,7 +133,7 @@ async def clock_game():
             ),
             Action(
                 name="get_unix_timestamp",
-                description="Get the Unix timestamp of a time. Requires the timestamp in '%Y-%m-%d %H:%M:%S' format.",
+                description="Get the Unix timestamp (timestamp must be in '%Y-%m-%d %H:%M:%S' format).",
                 schema={
                     "type": "object",
                     "properties": {
@@ -155,18 +160,13 @@ def get_formatted_time(timezone: str, time_format: str) -> str:
     :raise Exception: Generic errors.
     """
     try:
-        # Get the timezone object
         tz = pytz.timezone(timezone)
-
-        # Get the current time in the specified timezone
         current_time = datetime.now(tz)
-
-        # Format the time
         return current_time.strftime(time_format)
     except pytz.UnknownTimeZoneError:
-        raise ValueError(f"Error: Unknown timezone '{timezone}'")
+        raise ValueError(f"Unknown timezone: {timezone}")
     except Exception as e:
-        raise Exception(f"Error: {str(e)}")
+        raise Exception(f"Error: {e}")
 
 
 def get_unix_timestamp(timestamp: str, timezone: str) -> int:
@@ -180,26 +180,21 @@ def get_unix_timestamp(timestamp: str, timezone: str) -> int:
     :raise Exception: Generic errors.
     """
     try:
-        # Get the timezone object
         tz = pytz.timezone(timezone)
-
-        # Parse the input timestamp into a datetime object
         dt = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S')
-
-        # Localize the datetime object to the specified timezone
         localized_dt = tz.localize(dt)
-
-        # Convert the localized datetime to a Unix timestamp
-        unix_timestamp = int(localized_dt.timestamp())
-
-        return unix_timestamp
+        return int(localized_dt.timestamp())
     except pytz.UnknownTimeZoneError:
-        raise ValueError(f"Error: Unknown timezone '{timezone}'")
+        raise ValueError(f"Unknown timezone: {timezone}")
     except ValueError as e:
-        raise ValueError(f"Error: {str(e)}")
+        raise ValueError(f"Error: {e}")
     except Exception as e:
-        raise Exception(f"Error: {str(e)}")
+        raise Exception(f"Error: {e}")
+
+
+def main():
+    trio.run(clock_game)
 
 
 if __name__ == "__main__":
-    trio.run(clock_game)
+    main()

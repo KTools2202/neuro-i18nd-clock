@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nuru-clock"
+version = "0.1.0"
+description = "A clock utility for Neuro-sama."
+readme = "README.md"
+requires-python = ">=3.13"
+license = { text = "GNU GPL v3" }
+authors = [
+  { name = "KTrain5369", email = "contact@ktrain5369.me" }
+]
+# Any runtime dependencies go here:
+dependencies = [
+  "neuro_api==1.0.0",
+  "pytz==2025.2",
+  "python-dotenv==1.1.0"
+]
+
+# Define the console entry point:
+[project.scripts]
+nuru_clock = "nuru_clock.__main__:main"
+
+[dependency-groups]
+dev = [
+    "neuro-api-tony>=1.5.1",
+]

@@ -2,7 +2,11 @@ name: Lint with flake8 & correct with autopep8 on push
 
 on:
     push:
+      paths:
+        - main.py
     pull_request:
+      paths:
+        - main.py
 
 permissions:
     contents: write
@@ -28,18 +32,23 @@ jobs:
             
             - name: Run flake8
               id: flake8
-              run: flake8
+              run: flake8 src/nuru_clock
             
             - name: Fix using autopep8 on pushes
               id: autopep8
-              if: ${{ github.event_name == 'push' }}
+              if: ${{ github.event_name == 'push' && steps.flake8.outcome == 'failure' }}
               run: |
                 pip install autopep8
                 autopep8 --in-place main.py
             
+            - name: Check for autopep8 diffs
+              id: diff-check
+              if: ${{ steps.autopep8.outcome == 'success' }}
+              run: git diff --exit-code
+            
             - name: Commit changes
               id: commit
-              if: ${{ steps.autopep8.outcome == 'success' }}
+              if: ${{ steps.diff-check.outcome == 'failure' }}
               run: |
                 git config user.name GitHub Actions
                 git config user.email actions@github.com
