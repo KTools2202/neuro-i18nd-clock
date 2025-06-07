@@ -36,7 +36,7 @@ jobs:
               if: ${{ github.event_name == 'push' && steps.flake8.outcome == 'failure' }}
               run: |
                 pip install autopep8
-                autopep8 --in-place src/nuru_clock
+                autopep8 --in-place --recursive src/nuru_clock
             
             - name: Check for autopep8 diffs
               id: diff-check
