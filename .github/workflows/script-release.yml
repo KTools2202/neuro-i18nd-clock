@@ -33,7 +33,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.11
+          python-version: 3.13
 
       # 1.3) Install any runtime dependencies (if your EXE needs them)
       - name: Install requirements
@@ -44,7 +44,6 @@ jobs:
       # 1.4) Build a single-file EXE (or macOS/Linux binary) with PyInstaller
       - name: PyInstaller → Single executable
         run: |
-          # Adjust “main.py” to point to your actual entrypoint.
           pyinstaller --onefile --windowed src/nuru_clock/__main__.py --name "${{ github.repository_id }}_${{ matrix.os }}"
 
       # 1.5) Show what’s in dist/ for debugging
