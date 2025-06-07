@@ -45,7 +45,7 @@ jobs:
       - name: PyInstaller → Single executable
         run: |
           # Adjust “main.py” to point to your actual entrypoint.
-          pyinstaller --onefile --windowed main.py --name "${{ github.repository_id }}_${{ matrix.os }}"
+          pyinstaller --onefile --windowed src/nuru_clock/__main__.py --name "${{ github.repository_id }}_${{ matrix.os }}"
 
       # 1.5) Show what’s in dist/ for debugging
       - name: List out dist/ directory
@@ -135,7 +135,7 @@ jobs:
 
       # 3.2) Create (or update) the Draft Release and attach the binaries
       - name: Draft GitHub Release with EXE artifacts
-        uses: ncipollo/release-action@v1.14.0
+        uses: ncipollo/release-action@v1.16.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref_name }}
