@@ -2,11 +2,7 @@ name: Lint with flake8 & correct with autopep8 on push
 
 on:
     push:
-      paths:
-        - main.py
     pull_request:
-      paths:
-        - main.py
 
 permissions:
     contents: write
@@ -33,6 +29,7 @@ jobs:
             - name: Run flake8
               id: flake8
               run: flake8 src/nuru_clock
+              continue-on-error: true
             
             - name: Fix using autopep8 on pushes
               id: autopep8
