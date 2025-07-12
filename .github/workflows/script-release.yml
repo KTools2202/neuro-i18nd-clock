@@ -7,7 +7,7 @@ on:
       - "v*"
 
 permissions:
-  contents: write     # needed for creating draft releases
+  contents: write
 
 jobs:
   build_exe:
@@ -29,7 +29,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 1.2) Set up Python 3.11 (or bump to whatever version you need)
+      # 1.2) Set up Python 3.13
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
