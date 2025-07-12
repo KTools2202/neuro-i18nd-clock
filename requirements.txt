@@ -3,7 +3,7 @@ neuro_api==1.0.0
 
 # Other external deps
 pytz==2025.2
-python-dotenv==1.1.0
+python-dotenv==1.1.1
 
 # PEP 8 style guidelines
 flake8==7.2.0
