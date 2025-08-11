@@ -123,7 +123,7 @@ jobs:
     steps:
       # 3.1) Download the EXE artifacts produced by build_exe
       - name: Download EXE artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           path: release-artifacts
           pattern: "*_dists"
