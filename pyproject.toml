@@ -14,7 +14,7 @@ authors = [
 ]
 # Any runtime dependencies go here:
 dependencies = [
-  "neuro_api==1.0.0",
+  "neuro_api==1.1.0",
   "pytz==2025.2",
   "python-dotenv==1.1.0",
   "jsonschema>=4.23.0",

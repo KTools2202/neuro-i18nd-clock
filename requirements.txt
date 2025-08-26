@@ -1,5 +1,5 @@
 # Neuro-sama API
-neuro_api==1.0.0
+neuro_api==1.1.0
 
 # Other external deps
 pytz==2025.2
