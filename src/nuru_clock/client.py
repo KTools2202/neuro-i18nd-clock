@@ -16,7 +16,7 @@ from nuru_clock.utils import log
 
 load_dotenv()
 
-WEBSOCKET_ENV_VAR: Final = "WEBSOCKET_URI"#"NEURO_SDK_WS_URL"
+WEBSOCKET_ENV_VAR: Final = "WEBSOCKET_URI"  # "NEURO_SDK_WS_URL"
 DEFAULT_WEBSOCKET: Final = "ws://localhost:8000"
 
 
@@ -42,7 +42,7 @@ class ClockAPI(TrioNeuroAPI):
                     action_data = json.loads(action.data) if action.data else {}
                     validate(instance=action_data, schema=act.schema)
                     log("DEBUG", f"Schema validation passed for action: {action.name}")
-                    
+
                     # Perform the action
                     success, result = await act.perform_action(action)
                     log("INFO", f"Action '{action.name}' performed with result: {result}")
