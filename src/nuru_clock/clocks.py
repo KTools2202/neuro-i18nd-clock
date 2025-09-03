@@ -1,9 +1,13 @@
-import json
-import pytz
+from __future__ import annotations
+
 from datetime import datetime
-from neuro_api.api import NeuroAction
-from .actions import AbstractAction
 from typing import Optional
+
+import orjson
+from neuro_api.api import NeuroAction
+import pytz
+
+from .actions import AbstractAction
 from .utils import log
 
 all_timezones = pytz.all_timezones
@@ -35,7 +39,7 @@ class GetFormattedTimeAction(AbstractAction):
             if action.data is None:
                 log("WARNING", "No action data provided.")
                 return False, "No action data provided."
-            action_data = json.loads(action.data)
+            action_data = orjson.loads(action.data)
             timezone = str(action_data.get("timezone"))
             if timezone not in all_timezones:
                 log("WARNING", f"Invalid timezone provided: {timezone}")
@@ -75,7 +79,7 @@ class GetUnixTimestampAction(AbstractAction):
             if action.data is None:
                 log("WARNING", "No action data provided.")
                 return False, "No action data provided."
-            action_data = json.loads(action.data)
+            action_data = orjson.loads(action.data)
             timezone = str(action_data.get("timezone"))
             timestamp = str(action_data.get("timestamp"))
             unix_timestamp = get_unix_timestamp(timestamp, timezone)

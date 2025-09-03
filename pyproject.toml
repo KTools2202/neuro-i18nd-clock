@@ -14,18 +14,36 @@ authors = [
 ]
 # Any runtime dependencies go here:
 dependencies = [
-  "neuro_api==1.0.0",
-  "pytz==2025.2",
-  "python-dotenv==1.1.0",
-  "jsonschema>=4.23.0",
-  "colorama>=0.4.6",
+    # Neuro-sama API
+    "neuro_api==2.0.0",
+    # Other external deps
+    # neuro_api requires orjson as well, but best practice to list
+    # all dependencies you use yourself in case packages change to no
+    # longer require
+    "orjson>=3.11.3",
+    "pytz==2025.2",
+    "python-dotenv==1.1.0",
+    "jsonschema>=4.23.0",
+    "colorama>=0.4.6",
 ]
 
 # Define the console entry point:
 [project.scripts]
 nuru_clock = "nuru_clock.__main__:main"
 
-[dependency-groups]
+
+[project.optional-dependencies]
 dev = [
     "neuro-api-tony>=1.5.1",
+]
+tools = [
+    # PEP 8 style guidelines
+    "flake8==7.2.0",
+    "autopep8==2.3.2",
+    # PyInstaller (freezing scripts)
+    "pyinstaller==6.13.0",
+]
+docs = [
+    "mkdocs==1.6.1",
+    "mkdocs-material==9.5.41",
 ]
