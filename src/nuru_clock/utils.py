@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 from colorama import Fore, Style
 
+
 load_dotenv()
 
 # Define log levels with colored tags
@@ -37,6 +38,7 @@ if LOG_FILE:
     except Exception as e:
         logger.warning(f"Failed to create file handler for logging: {e}")
 
+
 # Define a custom formatter for colored logs
 class ColoredFormatter(logging.Formatter):
     def format(self, record):
@@ -45,16 +47,20 @@ class ColoredFormatter(logging.Formatter):
         record.msg = f"{colored_tag} {record.msg}"
         return super().format(record)
 
+
 formatter = ColoredFormatter("%(asctime)s - %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
 console_handler.setFormatter(formatter)
 
+
 if file_handler:
     file_handler.setFormatter(formatter)
+
 
 # Add handlers to the logger
 logger.addHandler(console_handler)
 if file_handler:
     logger.addHandler(file_handler)
+
 
 # Utility function to log messages
 def log(level: str, message: str):

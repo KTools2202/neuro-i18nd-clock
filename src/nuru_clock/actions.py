@@ -37,4 +37,3 @@ class AbstractAction(ABC):
         """
         Carries out the action.
         """
-        pass
