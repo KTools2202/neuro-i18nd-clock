@@ -15,7 +15,7 @@ authors = [
 # Any runtime dependencies go here:
 dependencies = [
     # Neuro-sama API
-    "neuro_api==2.0.0",
+    "neuro_api==2.1.0",
     # Other external deps
     # neuro_api requires orjson as well, but best practice to list
     # all dependencies you use yourself in case packages change to no
