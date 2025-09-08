@@ -133,7 +133,7 @@ jobs:
 
       # 3.2) Create (or update) the Draft Release and attach the binaries
       - name: Draft GitHub Release with EXE artifacts
-        uses: ncipollo/release-action@v1.16.0
+        uses: ncipollo/release-action@v1.20.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref_name }}
